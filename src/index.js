@@ -21,6 +21,8 @@ let lightbox = new SimpleLightbox('.gallery a', {
   animationSpeed: 350,
 });
 
+let totalImages = 0;
+
 async function submitForm(e) {
   e.preventDefault()
 
@@ -36,7 +38,17 @@ async function submitForm(e) {
   try {
     const response = await imagesApiService.fetchImages(searchQuery)
     const totalHits = response.totalHits
-    getImages(response.hits)
+    totalImages += imagesApiService.per_page
+    console.log(totalImages)
+
+    if (response.hits.length === 0) {
+      errorMessage();
+      form.reset()
+      return;
+    }
+
+    renderImages(response.hits)
+    loadMoreBtn.classList.remove('is-hidden');
 
     Notify.info(`Hooray! We found ${totalHits} images.`,
       {
@@ -48,31 +60,22 @@ async function submitForm(e) {
 
     lightbox.refresh();
     form.reset()
+
   } catch (error) {
     errorMessage
   }
-}
-
-
-function getImages(images) {
-
-  if (images.length === 0) {
-    errorMessage();
-    return;
-  }
-
-  renderImages(images)
-  loadMoreBtn.classList.remove('is-hidden');
 }
 
 async function onLoadMore(searchQuery) {
 
   try {
     const response = await imagesApiService.fetchImages(searchQuery)
-    const totalImages = imagesApiService.page * imagesApiService.per_page
+    totalImages += imagesApiService.per_page
+
+    console.log(totalImages)
 
     if (totalImages >= response.totalHits) {
-
+      renderImages(response.hits)
       loadMoreBtn.classList.add('is-hidden')
       Notify.failure("We're sorry, but you've reached the end of search results!",
         {
@@ -81,10 +84,11 @@ async function onLoadMore(searchQuery) {
           fontSize: "18px",
           position: 'right-top',
         },);
+      console.log("end", totalImages)
       return
     }
 
-    getImages(response.hits)
+    renderImages(response.hits)
 
     const { height: cardHeight } = document
       .querySelector(".gallery")
