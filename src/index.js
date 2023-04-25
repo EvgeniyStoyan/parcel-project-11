@@ -48,7 +48,6 @@ async function submitForm(e) {
     }
 
     renderImages(response.hits)
-    loadMoreBtn.classList.remove('is-hidden');
 
     Notify.info(`Hooray! We found ${totalHits} images.`,
       {
@@ -59,6 +58,12 @@ async function submitForm(e) {
       },);
 
     lightbox.refresh();
+    loadMoreBtn.classList.remove('is-hidden');
+
+    if (response.hits.length < imagesApiService.per_page) {
+      loadMoreBtn.classList.add('is-hidden')
+    }
+
     form.reset()
 
   } catch (error) {
