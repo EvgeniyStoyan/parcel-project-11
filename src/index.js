@@ -39,7 +39,6 @@ async function submitForm(e) {
     const response = await imagesApiService.fetchImages(searchQuery)
     const totalHits = response.totalHits
     totalImages += imagesApiService.per_page
-    console.log(totalImages)
 
     if (response.hits.length === 0) {
       errorMessage();
@@ -76,8 +75,6 @@ async function onLoadMore(searchQuery) {
   try {
     const response = await imagesApiService.fetchImages(searchQuery)
     totalImages += imagesApiService.per_page
-
-    console.log(totalImages)
 
     if (totalImages >= response.totalHits) {
       renderImages(response.hits)
