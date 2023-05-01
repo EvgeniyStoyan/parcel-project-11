@@ -115,6 +115,7 @@ b {
 
 p {
   text-align: center;
+  cursor: pointer;
 }
 
 .load-more {
